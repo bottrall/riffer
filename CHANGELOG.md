@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.46.0](https://github.com/janeapp/riffer/compare/riffer/v0.45.0...riffer/v0.46.0) (2026-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* Response#blocked?, Response#interrupted?, and Response#interrupt_reason are removed. Check response.outcome.reason for :guardrail_blocked, :interrupted, or :max_steps instead; response.tripwire still carries the full tripwire object. Response.new now requires outcome:.
+
+### Features
+
+* report how a run ended through Response#outcome ([#425](https://github.com/janeapp/riffer/issues/425)) ([2ba2157](https://github.com/janeapp/riffer/commit/2ba2157668cd4a2b013da190dd647ae131accfa3))
+
+
+### Bug Fixes
+
+* **anthropic:** merge caller output_config with structured output ([#422](https://github.com/janeapp/riffer/issues/422)) ([e1a60e6](https://github.com/janeapp/riffer/commit/e1a60e6f082dbf7d4ee9d151e96e56bdf3f26359))
+* **runner:** make Fibers runner safe inside a running Async reactor ([#424](https://github.com/janeapp/riffer/issues/424)) ([47d3706](https://github.com/janeapp/riffer/commit/47d3706dbeac1e456bbf8365361cf16741b09adf))
+
 ## [0.45.0](https://github.com/janeapp/riffer/compare/riffer/v0.44.0...riffer/v0.45.0) (2026-09-03)
 
 
