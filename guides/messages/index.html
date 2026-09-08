@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -244,7 +244,8 @@
 <span class="n">msg</span><span class="p">.</span><span class="nf">content</span>        <span class="c1"># =&gt; "I'm doing well, thank you!"</span>
 <span class="n">msg</span><span class="p">.</span><span class="nf">tool_calls</span>     <span class="c1"># =&gt; []</span>
 <span class="n">msg</span><span class="p">.</span><span class="nf">token_usage</span>    <span class="c1"># =&gt; nil or Riffer::Providers::TokenUsage</span>
-<span class="n">msg</span><span class="p">.</span><span class="nf">finish_reason</span>  <span class="c1"># =&gt; nil or a normalized Symbol (see below)</span>
+<span class="n">msg</span><span class="p">.</span><span class="nf">finish_reason</span>      <span class="c1"># =&gt; nil or a normalized Symbol (see below)</span>
+<span class="n">msg</span><span class="p">.</span><span class="nf">finish_reason_raw</span>  <span class="c1"># =&gt; nil or the provider's raw wire value (e.g. "max_tokens")</span>
 
 <span class="c1"># Response with tool calls</span>
 <span class="n">msg</span> <span class="o">=</span> <span class="no">Riffer</span><span class="o">::</span><span class="no">Messages</span><span class="o">::</span><span class="no">Assistant</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="ss">tool_calls: </span><span class="p">[</span>
@@ -325,7 +326,7 @@
   </tbody>
 </table>
 
-<p><code>finish_reason</code> is <code>nil</code> when the provider doesn’t report one. The provider’s raw wire value travels alongside on the <code>FinishReasonDone</code> stream event and the <code>riffer.finish_reason.raw</code> trace attribute — for OpenRouter that is the upstream model’s <code>native_finish_reason</code>, and for a failed OpenAI response it is the error code. Use <code>finish_reason</code> to detect truncation without parsing provider responses:</p>
+<p><code>finish_reason</code> is <code>nil</code> when the provider doesn’t report one. The provider’s raw wire value travels alongside as <code>finish_reason_raw</code> on the message (round-tripped through <code>to_h</code> / <code>from_hash</code>), on the <code>FinishReasonDone</code> stream event, and as the <code>riffer.finish_reason.raw</code> trace attribute — for OpenRouter that is the upstream model’s <code>native_finish_reason</code>, and for a failed OpenAI response it is the error code. Use <code>finish_reason</code> to detect truncation without parsing provider responses:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="n">agent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s2">"Summarize this document"</span><span class="p">)</span>
 <span class="n">retry_with_higher_limit</span> <span class="k">if</span> <span class="n">agent</span><span class="p">.</span><span class="nf">session</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">last</span><span class="p">.</span><span class="nf">finish_reason</span> <span class="o">==</span> <span class="ss">:length</span>
@@ -333,7 +334,7 @@
 
 <h4 id="structured-output-on-messages">Structured Output on Messages</h4>
 
-<p>When an agent has <code>structured_output</code> configured, the final assistant message stores the parsed hash directly. The <code>structured_output?</code> predicate checks for a non-nil value:</p>
+<p>When an agent has <code>structured_output</code> configured, the final assistant message stores the parsed hash directly. The message holds the parsed JSON, not the schema-validated result; schema validation is reported on <code>response.outcome</code> (see <a href="/guides/agent-lifecycle/#responseoutcome">Agent Lifecycle — response.outcome</a>). The <code>structured_output?</code> predicate checks for a non-nil value:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">msg</span> <span class="o">=</span> <span class="no">Riffer</span><span class="o">::</span><span class="no">Messages</span><span class="o">::</span><span class="no">Assistant</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s1">'{"sentiment":"positive"}'</span><span class="p">,</span> <span class="ss">structured_output: </span><span class="p">{</span><span class="ss">sentiment: </span><span class="s2">"positive"</span><span class="p">})</span>
 <span class="n">msg</span><span class="p">.</span><span class="nf">structured_output?</span>    <span class="c1"># =&gt; true</span>

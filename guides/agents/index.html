@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -351,6 +351,18 @@
 </code></pre></div></div>
 
 <p>The LLM response is automatically parsed and validated against the schema. Access the result via <code>response.structured_output</code>.</p>
+
+<p>When the response is not valid JSON or does not satisfy the schema, <code>response.structured_output</code> is <code>nil</code>, <code>response.outcome.reason</code> is <code>:invalid_structured_output</code>, and <code>response.outcome.detail</code> carries the parse or validation message:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="no">SentimentAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s1">'Analyze: "I love this!"'</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">success?</span>
+  <span class="n">response</span><span class="p">.</span><span class="nf">structured_output</span>  <span class="c1"># =&gt; {sentiment: "positive", score: 0.95}</span>
+<span class="k">else</span>
+  <span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>     <span class="c1"># =&gt; :invalid_structured_output</span>
+  <span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">detail</span>     <span class="c1"># =&gt; "score is required"</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h4 id="nested-objects">Nested Objects</h4>
 

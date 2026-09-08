@@ -5,17 +5,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>class Riffer::Evals::Evaluator - Riffer API Reference</title>
+<title>class Riffer::Agent::Outcome - Riffer API Reference</title>
 
 
   <meta
     name="keywords"
-    content="ruby,class,Riffer::Evals::Evaluator"
+    content="ruby,class,Riffer::Agent::Outcome"
   >
 
     <meta
       name="description"
-      content="class Riffer::Evals::Evaluator: Base class for all evaluators. Set +instructions+ and the base class calls the judge automatically; override +#evaluate+ for custom logic."
+      content="class Riffer::Agent::Outcome: How a run ended — the single place to read whether the agent completed normally and, if not, why. validation error."
     >
 
 
@@ -24,11 +24,11 @@
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="class Riffer::Evals::Evaluator - Riffer API Reference">
+<meta property="og:title" content="class Riffer::Agent::Outcome - Riffer API Reference">
 
 
 
-    <meta property="og:description" content="Base class for all evaluators. Set +instructions+ and the base class calls the judge automatically; override +#evaluate+ for custom logic.">
+    <meta property="og:description" content="How a run ended — the single place to read whether the agent completed normally and, if not, why. validation error.">
 
 
 
@@ -36,11 +36,11 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class Riffer::Evals::Evaluator - Riffer API Reference">
+<meta name="twitter:title" content="class Riffer::Agent::Outcome - Riffer API Reference">
 
 
 
-    <meta name="twitter:description" content="Base class for all evaluators. Set +instructions+ and the base class calls the judge automatically; override +#evaluate+ for custom logic.">
+    <meta name="twitter:description" content="How a run ended — the single place to read whether the agent completed normally and, if not, why. validation error.">
 
 
 
@@ -465,11 +465,7 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-c-higher_is_better">higher_is_better</a></li>
-
-        <li ><a href="#method-c-instructions">instructions</a></li>
-
-        <li ><a href="#method-c-judge_model">judge_model</a></li>
+        <li ><a href="#method-c-new">new</a></li>
 
       </ul>
     </details>
@@ -490,11 +486,7 @@
       </summary>
       <ul class="nav-list" role="directory">
 
-        <li ><a href="#method-i-evaluate">evaluate</a></li>
-
-        <li ><a href="#method-i-judge">judge</a></li>
-
-        <li ><a href="#method-i-result">result</a></li>
+        <li ><a href="#method-i-success-3F">success?</a></li>
 
       </ul>
     </details>
@@ -519,7 +511,7 @@
 
 </nav>
 
-<main role="main" aria-labelledby="class-riffer-evals-evaluator">
+<main role="main" aria-labelledby="class-riffer-agent-outcome">
   
   
     <ol role="navigation" aria-label="Breadcrumb navigation" class="breadcrumb">
@@ -532,32 +524,32 @@
       
       <li>
         
-        <a href="../../Riffer/Evals.html">Evals</a><span>::</span>
+        <a href="../../Riffer/Agent.html">Agent</a><span>::</span>
         
       </li>
       
       <li>
         
-        <span>Evaluator</span>
+        <span>Outcome</span>
         
       </li>
       
     </ol>
   
 
-  <span id="class-Riffer::Evals::Evaluator" class="legacy-anchor"></span>
-  <h1 id="class-riffer-evals-evaluator" class="anchor-link class">
-    class Riffer::Evals::Evaluator
+  <span id="class-Riffer::Agent::Outcome" class="legacy-anchor"></span>
+  <h1 id="class-riffer-agent-outcome" class="anchor-link class">
+    class Riffer::Agent::Outcome
   </h1>
 
   <section class="description">
     
-<p>Base class for all evaluators. Set <code>instructions</code> and the base class calls the judge automatically; override <a href="Evaluator.html#method-i-evaluate"><code>evaluate</code></a> for custom logic. See examples/evaluators/ for reference implementations.</p>
+<p>How a run ended — the single place to read whether the agent completed normally and, if not, why. <code>detail</code> carries the specifics when there are any: the tripwire reason, the interrupt reason, the provider’s raw finish value, or the structured output parse/validation error.</p>
 
-<pre class="ruby"><span class="ruby-keyword">class</span> <span class="ruby-constant">MyEvaluator</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">Riffer</span><span class="ruby-operator">::</span><span class="ruby-constant">Evals</span><span class="ruby-operator">::</span><span class="ruby-constant">Evaluator</span>
-  <span class="ruby-identifier">instructions</span> <span class="ruby-string">&quot;Assess medical accuracy of the response...&quot;</span>
-  <span class="ruby-identifier">higher_is_better</span> <span class="ruby-keyword">true</span>
-  <span class="ruby-identifier">judge_model</span> <span class="ruby-string">&quot;anthropic/claude-opus-4-5-20251101&quot;</span>
+<pre class="ruby"><span class="ruby-identifier">response</span> = <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">generate</span>(<span class="ruby-string">&quot;Analyze this&quot;</span>)
+<span class="ruby-keyword">case</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">outcome</span>.<span class="ruby-identifier">reason</span>
+<span class="ruby-keyword">when</span> <span class="ruby-value">:completed</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">puts</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">structured_output</span>
+<span class="ruby-keyword">when</span> <span class="ruby-value">:invalid_structured_output</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">warn</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">outcome</span>.<span class="ruby-identifier">detail</span>
 <span class="ruby-keyword">end</span>
 </pre>
 
@@ -571,7 +563,80 @@
 
 
 
+    <section class="constants-list">
+      <header>
+        <h3 id="untitled-constants"><a href="#untitled-constants">Constants</a></h3>
+      </header>
+      <dl>
 
+        <dt id="NORMAL_FINISH_REASONS">NORMAL_FINISH_REASONS</dt>
+
+        <dd>
+
+          <p>Finish reasons that end a turn normally; every other finish reason means the provider cut the turn short and surfaces as the run’s outcome verbatim.</p>
+        </dd>
+
+
+        <dt id="PROVIDER_STOP_REASONS">PROVIDER_STOP_REASONS</dt>
+
+        <dd>
+
+          <p>Derived from the provider vocabulary so a new finish reason becomes an outcome without a second list to update.</p>
+        </dd>
+
+
+        <dt id="VALUES">VALUES</dt>
+
+        <dd>
+
+          <p>The vocabulary every run ends in.</p>
+        </dd>
+
+
+      </dl>
+    </section>
+
+
+
+    <section class="attribute-method-details method-section">
+      <header>
+        <h3 id="untitled-attributes"><a href="#untitled-attributes">Attributes</a></h3>
+      </header>
+
+
+      <div id="attribute-i-detail" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-i-detail" title="Link to this attribute">
+            <span class="method-name">detail</span>
+            <span class="attribute-access-type">[R]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+
+
+        <p>Human-readable specifics for <code>reason</code>, when there are any.</p>
+
+        </div>
+      </div>
+
+      <div id="attribute-i-reason" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-i-reason" title="Link to this attribute">
+            <span class="method-name">reason</span>
+            <span class="attribute-access-type">[R]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+
+
+        <p>Why the run ended.</p>
+
+        </div>
+      </div>
+
+    </section>
 
 
 
@@ -584,13 +649,13 @@
        </header>
 
 
-      <div id="method-c-higher_is_better" class="method-detail anchor-link ">
+      <div id="method-c-new" class="method-detail anchor-link ">
         <div class="method-header">
 
             <div class="method-heading">
-              <a href="#method-c-higher_is_better" title="Link to this method">
-                <span class="method-name">higher_is_better</span>
-                <span class="method-args">(value = nil)</span>
+              <a href="#method-c-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">(reason:, detail: nil)</span>
               </a>
             </div>
 
@@ -602,16 +667,15 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="higher_is_better-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 35</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">higher_is_better</span>(<span class="ruby-identifier">value</span> = <span class="ruby-keyword">nil</span>)
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
-    <span class="ruby-identifier">current</span> = <span class="ruby-ivar">@higher_is_better</span>
-    <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">current</span>.<span class="ruby-identifier">nil?</span>
-
-    <span class="ruby-keyword">return</span> <span class="ruby-identifier">current</span>
+          <div class="method-source-code" id="new-source">
+            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/agent/outcome.rb, line 36</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-value">reason:</span>, <span class="ruby-value">detail:</span> <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">VALUES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">reason</span>)
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">Riffer</span><span class="ruby-operator">::</span><span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;reason must be one of #{VALUES.inspect}, got #{reason.inspect}&quot;</span>
   <span class="ruby-keyword">end</span>
-  <span class="ruby-ivar">@higher_is_better</span> = <span class="ruby-identifier">value</span>
+
+  <span class="ruby-ivar">@reason</span> = <span class="ruby-identifier">reason</span>
+  <span class="ruby-ivar">@detail</span> = <span class="ruby-identifier">detail</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -620,95 +684,7 @@
         <div class="method-description">
 
 
-          <p>Gets or sets whether higher scores are better.</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-c-instructions" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-c-instructions" title="Link to this method">
-                <span class="method-name">instructions</span>
-                <span class="method-args">(value = nil)</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="instructions-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 25</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">instructions</span>(<span class="ruby-identifier">value</span> = <span class="ruby-keyword">nil</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-ivar">@instructions</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
-
-  <span class="ruby-ivar">@instructions</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Gets or sets the evaluation instructions (criteria and scoring rubric).</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-c-judge_model" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-c-judge_model" title="Link to this method">
-                <span class="method-name">judge_model</span>
-                <span class="method-args">(value = nil)</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="judge_model-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 49</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">judge_model</span>(<span class="ruby-identifier">value</span> = <span class="ruby-keyword">nil</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-ivar">@judge_model</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
-
-  <span class="ruby-ivar">@judge_model</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Gets or sets the judge model for LLM-as-judge evaluations.</p>
+          <p>Raises <a href="../ArgumentError.html"><code>Riffer::ArgumentError</code></a> when <code>reason</code> is outside <a href="Outcome.html#VALUES"><code>VALUES</code></a>.</p>
 
 
         </div>
@@ -734,73 +710,12 @@
        </header>
 
 
-      <div id="method-i-evaluate" class="method-detail anchor-link ">
+      <div id="method-i-success-3F" class="method-detail anchor-link ">
         <div class="method-header">
 
             <div class="method-heading">
-              <a href="#method-i-evaluate" title="Link to this method">
-                <span class="method-name">evaluate</span>
-                <span class="method-args">(input:, output:, ground_truth: nil, messages: [])</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="evaluate-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 61</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">evaluate</span>(<span class="ruby-value">input:</span>, <span class="ruby-value">output:</span>, <span class="ruby-value">ground_truth:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">messages:</span> [])
-  <span class="ruby-identifier">instr</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">instructions</span>
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotImplementedError</span>, <span class="ruby-node">&quot;#{self.class} must set instructions or implement #evaluate&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">instr</span>
-
-  <span class="ruby-identifier">evaluation</span> = <span class="ruby-identifier">judge</span>.<span class="ruby-identifier">evaluate</span>(
-    <span class="ruby-value">instructions:</span> <span class="ruby-identifier">instr</span>,
-    <span class="ruby-value">input:</span> <span class="ruby-identifier">format_input</span>(<span class="ruby-identifier">input</span>),
-    <span class="ruby-value">output:</span> <span class="ruby-identifier">output</span>,
-    <span class="ruby-value">ground_truth:</span> <span class="ruby-identifier">ground_truth</span>,
-  )
-
-  <span class="ruby-identifier">result</span>(<span class="ruby-value">score:</span> <span class="ruby-identifier">evaluation</span>[<span class="ruby-value">:score</span>], <span class="ruby-value">reason:</span> <span class="ruby-identifier">evaluation</span>[<span class="ruby-value">:reason</span>], <span class="ruby-value">token_usage:</span> <span class="ruby-identifier">evaluation</span>[<span class="ruby-value">:token_usage</span>])
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Evaluates an input/output pair. The default calls the judge with the class-level <code>instructions</code>; override for custom logic (e.g. rule-based evaluators).</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-    </section>
-
-
-     <section id="protected-instance-untitled-method-details" class="method-section anchor-link">
-       <header>
-         <h3 id="protected-instance-untitled-methods"><a href="#protected-instance-untitled-methods">Protected Instance Methods</a></h3>
-       </header>
-
-
-      <div id="method-i-judge" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-i-judge" title="Link to this method">
-                <span class="method-name">judge</span>
+              <a href="#method-i-success-3F" title="Link to this method">
+                <span class="method-name">success?</span>
                 <span class="method-args">()</span>
               </a>
             </div>
@@ -813,18 +728,10 @@
               <summary>Source</summary>
             </details>
           </div>
-          <div class="method-source-code" id="judge-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 101</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">judge</span>
-  <span class="ruby-ivar">@judge</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword">begin</span>
-    <span class="ruby-identifier">model</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">judge_model</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Riffer</span>.<span class="ruby-identifier">config</span>.<span class="ruby-identifier">evals</span>.<span class="ruby-identifier">judge_model</span>
-    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">model</span>
-      <span class="ruby-identifier">raise</span> <span class="ruby-constant">Riffer</span><span class="ruby-operator">::</span><span class="ruby-constant">ArgumentError</span>,
-            <span class="ruby-string">&quot;No judge model configured. Set judge_model on the evaluator or Riffer.config.evals.judge_model&quot;</span>
-    <span class="ruby-keyword">end</span>
-
-    <span class="ruby-constant">Riffer</span><span class="ruby-operator">::</span><span class="ruby-constant">Evals</span><span class="ruby-operator">::</span><span class="ruby-constant">Judge</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">model:</span> <span class="ruby-identifier">model</span>)
-  <span class="ruby-keyword">end</span>
+          <div class="method-source-code" id="success-3F-source">
+            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/agent/outcome.rb, line 49</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">success?</span>
+  <span class="ruby-identifier">reason</span> <span class="ruby-operator">==</span> <span class="ruby-value">:completed</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
 
@@ -833,56 +740,7 @@
         <div class="method-description">
 
 
-          <p>Returns a Judge instance configured for this evaluator.</p>
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-      <div id="method-i-result" class="method-detail anchor-link ">
-        <div class="method-header">
-
-            <div class="method-heading">
-              <a href="#method-i-result" title="Link to this method">
-                <span class="method-name">result</span>
-                <span class="method-args">(score:, reason: nil, metadata: {}, token_usage: nil)</span>
-              </a>
-            </div>
-
-        </div>
-
-
-          <div class="method-controls">
-            <details class="method-source-toggle">
-              <summary>Source</summary>
-            </details>
-          </div>
-          <div class="method-source-code" id="result-source">
-            <pre class="ruby"><span class="ruby-comment"># File lib/riffer/evals/evaluator.rb, line 116</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">result</span>(<span class="ruby-value">score:</span>, <span class="ruby-value">reason:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-value">metadata:</span> {}, <span class="ruby-value">token_usage:</span> <span class="ruby-keyword">nil</span>)
-  <span class="ruby-constant">Riffer</span><span class="ruby-operator">::</span><span class="ruby-constant">Evals</span><span class="ruby-operator">::</span><span class="ruby-constant">Result</span>.<span class="ruby-identifier">new</span>(
-    <span class="ruby-value">evaluator:</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>,
-    <span class="ruby-value">score:</span> <span class="ruby-identifier">score</span>,
-    <span class="ruby-value">reason:</span> <span class="ruby-identifier">reason</span>,
-    <span class="ruby-value">metadata:</span> <span class="ruby-identifier">metadata</span>,
-    <span class="ruby-value">higher_is_better:</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">higher_is_better</span>,
-    <span class="ruby-value">token_usage:</span> <span class="ruby-identifier">token_usage</span>,
-  )
-<span class="ruby-keyword">end</span></pre>
-          </div>
-
-
-
-        <div class="method-description">
-
-
-          <p>Builds a Result for this evaluator.</p>
+          <p>Returns true when the run completed normally.</p>
 
 
         </div>
@@ -895,6 +753,7 @@
 
 
     </section>
+
 
 
 

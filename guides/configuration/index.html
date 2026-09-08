@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -748,6 +748,10 @@
       <td>Extended thinking config hash (Claude 3.7+)</td>
     </tr>
     <tr>
+      <td><code>output_config</code></td>
+      <td>Output config hash (e.g. <code>effort</code>)</td>
+    </tr>
+    <tr>
       <td><code>web_search</code></td>
       <td>Enable web search (<code>true</code> or config hash)</td>
     </tr>
@@ -763,6 +767,12 @@
 <span class="k">class</span> <span class="nc">ReasoningAgent</span> <span class="o">&lt;</span> <span class="no">Riffer</span><span class="o">::</span><span class="no">Agent</span>
   <span class="n">model</span> <span class="s1">'anthropic/claude-haiku-4-5-20251001'</span>
   <span class="n">model_options</span> <span class="ss">thinking: </span><span class="p">{</span><span class="ss">type: </span><span class="s2">"enabled"</span><span class="p">,</span> <span class="ss">budget_tokens: </span><span class="mi">10000</span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># With an output effort level</span>
+<span class="k">class</span> <span class="nc">EffortAgent</span> <span class="o">&lt;</span> <span class="no">Riffer</span><span class="o">::</span><span class="no">Agent</span>
+  <span class="n">model</span> <span class="s1">'anthropic/claude-opus-5'</span>
+  <span class="n">model_options</span> <span class="ss">output_config: </span><span class="p">{</span><span class="ss">effort: </span><span class="s2">"high"</span><span class="p">}</span>
 <span class="k">end</span>
 </code></pre></div></div>
 

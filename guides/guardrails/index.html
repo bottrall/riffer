@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -228,10 +228,10 @@
 <span class="k">end</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s2">"Hello!"</span><span class="p">)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">blocked?</span>  <span class="c1"># =&gt; false</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>    <span class="c1"># =&gt; :completed</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s2">"You are a badword"</span><span class="p">)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">blocked?</span>          <span class="c1"># =&gt; true</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>    <span class="c1"># =&gt; :guardrail_blocked</span>
 <span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span><span class="p">.</span><span class="nf">reason</span>   <span class="c1"># =&gt; "Profanity detected"</span>
 </code></pre></div></div>
 
@@ -392,7 +392,7 @@
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s2">"Hello"</span><span class="p">)</span>
 
 <span class="n">response</span><span class="p">.</span><span class="nf">content</span>        <span class="c1"># The response text</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">blocked?</span>       <span class="c1"># true if a guardrail blocked execution</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span> <span class="c1"># :guardrail_blocked if a guardrail blocked execution</span>
 <span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span>       <span class="c1"># Tripwire object with block details (if blocked)</span>
 <span class="n">response</span><span class="p">.</span><span class="nf">modified?</span>      <span class="c1"># true if any guardrail transformed data</span>
 <span class="n">response</span><span class="p">.</span><span class="nf">modifications</span>  <span class="c1"># Array of Modification records</span>
@@ -402,7 +402,7 @@
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s2">"Hello"</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">response</span><span class="p">.</span><span class="nf">blocked?</span>
+<span class="k">if</span> <span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span> <span class="o">==</span> <span class="ss">:guardrail_blocked</span>
   <span class="nb">puts</span> <span class="s2">"Blocked: </span><span class="si">#{</span><span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span><span class="p">.</span><span class="nf">reason</span><span class="si">}</span><span class="s2">"</span>
   <span class="nb">puts</span> <span class="s2">"Phase: </span><span class="si">#{</span><span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span><span class="p">.</span><span class="nf">phase</span><span class="si">}</span><span class="s2">"</span>
   <span class="nb">puts</span> <span class="s2">"Guardrail: </span><span class="si">#{</span><span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span><span class="p">.</span><span class="nf">guardrail</span><span class="si">}</span><span class="s2">"</span>

@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -235,7 +235,7 @@
 
 <ul>
   <li><strong>When to use:</strong> Policy enforcement that should always apply — content filtering, input validation, length limits.</li>
-  <li><strong>Response:</strong> <code>response.blocked?</code> returns <code>true</code>, <code>response.tripwire</code> contains the reason and metadata.</li>
+  <li><strong>Response:</strong> <code>response.outcome.reason</code> is <code>:guardrail_blocked</code>, <code>response.tripwire</code> contains the reason and metadata.</li>
   <li><strong>Streaming:</strong> Yields a <code>GuardrailTripwire</code> event.</li>
   <li><strong>Resumable:</strong> No. A tripwire is a hard stop. The caller must change the input and start a new <code>generate</code>/<code>stream</code> call.</li>
 </ul>
@@ -246,7 +246,7 @@
 <span class="k">end</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s1">'blocked input'</span><span class="p">)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">blocked?</span>          <span class="c1"># =&gt; true</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>    <span class="c1"># =&gt; :guardrail_blocked</span>
 <span class="n">response</span><span class="p">.</span><span class="nf">tripwire</span><span class="p">.</span><span class="nf">reason</span>   <span class="c1"># =&gt; "Content policy violation"</span>
 </code></pre></div></div>
 
@@ -256,7 +256,7 @@
 
 <ul>
   <li><strong>When to use:</strong> Flow control that depends on runtime decisions — human-in-the-loop approval, budget tracking, conditional pausing.</li>
-  <li><strong>Response:</strong> <code>response.interrupted?</code> returns <code>true</code>, <code>response.interrupt_reason</code> contains the optional reason.</li>
+  <li><strong>Response:</strong> <code>response.outcome.reason</code> is <code>:interrupted</code>, <code>response.outcome.detail</code> contains the optional reason.</li>
   <li><strong>Streaming:</strong> Yields an <code>Interrupt</code> event with a <code>reason</code> attribute.</li>
   <li><strong>Resumable:</strong> Yes. Call <code>generate('Continue')</code> or <code>stream('Continue')</code> on the same agent instance to resume. For cross-process resume, pass persisted messages as an array to a new agent. Pending tool calls are automatically executed before the LLM loop resumes.</li>
 </ul>
@@ -267,8 +267,8 @@
 <span class="k">end</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">agent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s1">'Do something risky'</span><span class="p">)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">interrupted?</span>      <span class="c1"># =&gt; true</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">interrupt_reason</span>  <span class="c1"># =&gt; "approval needed"</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>    <span class="c1"># =&gt; :interrupted</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">detail</span>    <span class="c1"># =&gt; "approval needed"</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">agent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s1">'Approved, continue'</span><span class="p">)</span>  <span class="c1"># continues where it left off</span>
 </code></pre></div></div>
 
@@ -278,7 +278,7 @@
 
 <ul>
   <li><strong>When to use:</strong> Safety net to prevent runaway tool-use loops — useful when agents have access to many tools or operate autonomously.</li>
-  <li><strong>Response:</strong> <code>response.interrupted?</code> returns <code>true</code>, <code>response.interrupt_reason</code> is <code>:max_steps</code>.</li>
+  <li><strong>Response:</strong> <code>response.outcome.reason</code> is <code>:max_steps</code>.</li>
   <li><strong>Streaming:</strong> Yields an <code>Interrupt</code> event with <code>reason: :max_steps</code>.</li>
   <li><strong>Resumable:</strong> Yes. Call <code>generate('Continue')</code> or <code>stream('Continue')</code> on the same agent instance to resume. For cross-process resume, pass persisted messages as an array to a new agent. Pending tool calls are automatically executed before the LLM loop resumes.</li>
 </ul>
@@ -289,8 +289,7 @@
 <span class="k">end</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="no">MyAgent</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="s1">'Do a complex task'</span><span class="p">)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">interrupted?</span>      <span class="c1"># =&gt; true (if 8 steps were reached)</span>
-<span class="n">response</span><span class="p">.</span><span class="nf">interrupt_reason</span>  <span class="c1"># =&gt; :max_steps</span>
+<span class="n">response</span><span class="p">.</span><span class="nf">outcome</span><span class="p">.</span><span class="nf">reason</span>    <span class="c1"># =&gt; :max_steps (if 8 steps were reached)</span>
 </code></pre></div></div>
 
 <h3 id="unhandled-exceptions">Unhandled Exceptions</h3>
@@ -328,10 +327,10 @@
       <td>Yes (call <code>generate</code>/<code>stream</code> again)</td>
     </tr>
     <tr>
-      <td>Response flag</td>
-      <td><code>blocked?</code></td>
-      <td><code>interrupted?</code></td>
-      <td><code>interrupted?</code></td>
+      <td>Outcome reason</td>
+      <td><code>:guardrail_blocked</code></td>
+      <td><code>:interrupted</code></td>
+      <td><code>:max_steps</code></td>
     </tr>
     <tr>
       <td>Stream event</td>

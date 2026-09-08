@@ -23,7 +23,7 @@
             <a href="/guides/overview/">Guides</a>
             <a href="/api/">API Reference</a>
             <a href="https://github.com/janeapp/riffer">GitHub</a>
-            <span class="version">v0.45.0</span>
+            <span class="version">v0.46.0</span>
           </div>
         </nav>
       </div>
@@ -398,7 +398,7 @@
   <li>The <code>max_steps</code> limit is reached (reason is the Symbol <code>:max_steps</code>).</li>
 </ul>
 
-<p>This is the streaming equivalent of <code>Response#interrupted?</code> in generate mode.</p>
+<p>This is the streaming equivalent of <code>response.outcome.reason == :interrupted</code> (or <code>:max_steps</code>) in generate mode.</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Callback interrupt with a string reason</span>
 <span class="n">event</span> <span class="o">=</span> <span class="no">Riffer</span><span class="o">::</span><span class="no">StreamEvents</span><span class="o">::</span><span class="no">Interrupt</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">reason: </span><span class="s2">"needs approval"</span><span class="p">)</span>
