@@ -14,38 +14,30 @@ class Riffer::Messages::Base
 
     raise Riffer::ArgumentError, "Message must be a Hash or Message object, got #{msg.class}" unless msg.is_a?(Hash)
 
-    role = msg[:role]
-    content = msg[:content]
+    raise Riffer::ArgumentError, "Message hash must include a 'role' key" if msg[:role].nil? || msg[:role].empty?
 
-    raise Riffer::ArgumentError, "Message hash must include a 'role' key" if role.nil? || role.empty?
-
-    id = msg[:id]
-
-    case role.to_sym
+    case msg[:role].to_sym
     when :user
       files = (msg[:files] || []).map { |f| Riffer::Messages::FilePart.from_hash(f) }
-      Riffer::Messages::User.new(content, id: id, files: files)
+      Riffer::Messages::User.new(msg[:content], id: msg[:id], files: files)
     when :assistant
       tool_calls = (msg[:tool_calls] || []).map do |tc|
         tc.is_a?(Riffer::Messages::Assistant::ToolCall) ? tc : Riffer::Messages::Assistant::ToolCall.new(**tc)
       end
-      structured_output = msg[:structured_output]
-      finish_reason = msg[:finish_reason]&.to_sym
       Riffer::Messages::Assistant.new(
-        content,
-        id: id,
+        msg[:content],
+        id: msg[:id],
         tool_calls: tool_calls,
-        structured_output: structured_output,
-        finish_reason: finish_reason,
+        structured_output: msg[:structured_output],
+        finish_reason: msg[:finish_reason]&.to_sym,
+        finish_reason_raw: msg[:finish_reason_raw],
       )
     when :system
-      Riffer::Messages::System.new(content, id: id)
+      Riffer::Messages::System.new(msg[:content], id: msg[:id])
     when :tool
-      tool_call_id = msg[:tool_call_id]
-      name = msg[:name]
-      Riffer::Messages::Tool.new(content, id: id, tool_call_id: tool_call_id, name: name)
+      Riffer::Messages::Tool.new(msg[:content], id: msg[:id], tool_call_id: msg[:tool_call_id], name: msg[:name])
     else
-      raise Riffer::ArgumentError, "Unknown message role: #{role}"
+      raise Riffer::ArgumentError, "Unknown message role: #{msg[:role]}"
     end
   end
 
