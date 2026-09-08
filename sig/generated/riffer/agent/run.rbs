@@ -48,8 +48,10 @@ module Riffer::Agent::Run
   # : (Riffer::Agent, Array[Riffer::Guardrails::Modification], ?interrupted: bool, ?interrupt_reason: (String | Symbol)?, **untyped) -> Riffer::Agent::Response
   def final_response: (Riffer::Agent, Array[Riffer::Guardrails::Modification], ?interrupted: bool, ?interrupt_reason: (String | Symbol)?, **untyped) -> Riffer::Agent::Response
 
-  # Ordered most-causal first: a stop the caller forced outranks what the
-  # provider reported, which outranks how riffer post-processed the content.
+  # Checked in the order things happened. The loop being stopped (max_steps or
+  # an interrupt) beats the provider's finish reason, which beats riffer's own
+  # validation of the content. A truncated response that also fails the schema
+  # therefore reports :length, not :invalid_structured_output.
   # --
   # : (Riffer::Messages::Assistant?, Riffer::Agent::StructuredOutput::Result?, interrupted: bool, interrupt_reason: (String | Symbol)?) -> Riffer::Agent::Outcome
   def final_outcome: (Riffer::Messages::Assistant?, Riffer::Agent::StructuredOutput::Result?, interrupted: bool, interrupt_reason: (String | Symbol)?) -> Riffer::Agent::Outcome

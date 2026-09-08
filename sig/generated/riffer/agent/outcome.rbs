@@ -11,8 +11,12 @@
 #   when :invalid_structured_output then warn response.outcome.detail
 #   end
 class Riffer::Agent::Outcome
-  # Finish reasons that mean the provider cut the turn short; they surface as
-  # the run's outcome verbatim.
+  # Finish reasons that end a turn normally; every other finish reason means the
+  # provider cut the turn short and surfaces as the run's outcome verbatim.
+  NORMAL_FINISH_REASONS: Array[Symbol]
+
+  # Derived from the provider vocabulary so a new finish reason becomes an
+  # outcome without a second list to update.
   PROVIDER_STOP_REASONS: Array[Symbol]
 
   # The vocabulary every run ends in.

@@ -12,9 +12,13 @@
 #   when :invalid_structured_output then warn response.outcome.detail
 #   end
 class Riffer::Agent::Outcome
-  # Finish reasons that mean the provider cut the turn short; they surface as
-  # the run's outcome verbatim.
-  PROVIDER_STOP_REASONS = %i[length content_filter context_window malformed_output error other].freeze #: Array[Symbol]
+  # Finish reasons that end a turn normally; every other finish reason means the
+  # provider cut the turn short and surfaces as the run's outcome verbatim.
+  NORMAL_FINISH_REASONS = %i[stop tool_calls].freeze #: Array[Symbol]
+
+  # Derived from the provider vocabulary so a new finish reason becomes an
+  # outcome without a second list to update.
+  PROVIDER_STOP_REASONS = (Riffer::Providers::FinishReason::VALUES - NORMAL_FINISH_REASONS).freeze #: Array[Symbol]
 
   # The vocabulary every run ends in.
   VALUES = (%i[completed guardrail_blocked interrupted max_steps invalid_structured_output] +

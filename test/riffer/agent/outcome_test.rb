@@ -22,6 +22,12 @@ describe Riffer::Agent::Outcome do
       expect(outcome.detail).must_be_nil
     end
 
+    it "covers every provider finish reason, so none can fall through to :completed" do
+      covered = Riffer::Agent::Outcome::NORMAL_FINISH_REASONS + Riffer::Agent::Outcome::VALUES
+
+      expect(Riffer::Providers::FinishReason::VALUES - covered).must_be_empty
+    end
+
     it "accepts every value in the vocabulary" do
       reasons = Riffer::Agent::Outcome::VALUES.map { |v| Riffer::Agent::Outcome.new(reason: v).reason }
 

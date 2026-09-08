@@ -300,7 +300,7 @@ agent.context[:skills]        # the Skills::Context, if skills configured
 
 ## Response Attributes
 
-`Riffer::Agent::Response` is returned by `generate`:
+`Riffer::Agent::Response` is returned by `generate`. Start with `response.outcome`: its `reason` says how the run ended, and everything else on the response is detail for that reason. `response.content` and `response.structured_output` are only meaningful when the reason is `:completed`; see [response.outcome](#responseoutcome) for the full vocabulary.
 
 | Attribute              | Type                        | Description                                                                                      |
 | ---------------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |

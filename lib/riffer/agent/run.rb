@@ -222,7 +222,7 @@ module Riffer::Agent::Run
   #: (Riffer::Agent, Array[Riffer::Guardrails::Modification], ?interrupted: bool, ?interrupt_reason: (String | Symbol)?, **untyped) -> Riffer::Agent::Response
   def final_response(agent, all_modifications, interrupted: false, interrupt_reason: nil, **extra)
     message = agent.session.final_assistant_message
-    result = structured_output_result(agent, message)
+    result = agent.structured_output && structured_output_result(agent, message)
     build_response(
       agent,
       message&.content || "",
@@ -233,8 +233,10 @@ module Riffer::Agent::Run
     )
   end
 
-  # Ordered most-causal first: a stop the caller forced outranks what the
-  # provider reported, which outranks how riffer post-processed the content.
+  # Checked in the order things happened. The loop being stopped (max_steps or
+  # an interrupt) beats the provider's finish reason, which beats riffer's own
+  # validation of the content. A truncated response that also fails the schema
+  # therefore reports :length, not :invalid_structured_output.
   #--
   #: (Riffer::Messages::Assistant?, Riffer::Agent::StructuredOutput::Result?, interrupted: bool, interrupt_reason: (String | Symbol)?) -> Riffer::Agent::Outcome
   def final_outcome(message, result, interrupted:, interrupt_reason:)
@@ -243,7 +245,7 @@ module Riffer::Agent::Run
       Riffer::Agent::Outcome.new(reason: :max_steps)
     elsif interrupted
       Riffer::Agent::Outcome.new(reason: :interrupted, detail: interrupt_reason&.to_s)
-    elsif finish_reason && Riffer::Agent::Outcome::PROVIDER_STOP_REASONS.include?(finish_reason)
+    elsif finish_reason && !Riffer::Agent::Outcome::NORMAL_FINISH_REASONS.include?(finish_reason)
       Riffer::Agent::Outcome.new(reason: finish_reason, detail: message&.finish_reason_raw)
     elsif result&.failure?
       Riffer::Agent::Outcome.new(reason: :invalid_structured_output, detail: result.error)
@@ -354,9 +356,9 @@ module Riffer::Agent::Run
   #--
   #: (Riffer::Agent, Riffer::Messages::Assistant?) -> Riffer::Agent::StructuredOutput::Result?
   def structured_output_result(agent, message)
-    return unless message && agent.structured_output
+    return unless message
 
-    agent.structured_output.parse_and_validate(message.content)
+    agent.structured_output&.parse_and_validate(message.content)
   end
 
   #--
