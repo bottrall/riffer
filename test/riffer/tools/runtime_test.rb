@@ -616,11 +616,11 @@ describe Riffer::Tools::Runtime::Fibers do
       )
     end
 
-    Async do
+    Sync do
       results = runtime.execute(tool_calls, tools: [slow_tool], context: nil)
 
       expect(results.length).must_equal 3
-      expect(results.compact.map { |(_, response)| response.content }).must_equal %w[done done done]
+      expect(results.map { |(_, response)| response.content }).must_equal %w[done done done]
     end
   end
 end

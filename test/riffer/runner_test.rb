@@ -115,7 +115,7 @@ describe Riffer::Runner::Fibers do
     it "returns complete ordered results inside a running reactor" do
       runner = Riffer::Runner::Fibers.new
 
-      Async do
+      Sync do
         results = runner.map([1, 2, 3], context: nil) do |n|
           sleep 0.01
           n * 2
@@ -130,8 +130,8 @@ describe Riffer::Runner::Fibers do
       concurrent = 0
       max_concurrent = 0
 
-      Async do
-        runner.map([1, 2, 3, 4], context: nil) do |n|
+      Sync do
+        results = runner.map([1, 2, 3, 4], context: nil) do |n|
           concurrent += 1
           max_concurrent = [max_concurrent, concurrent].max
           sleep 0.02
@@ -139,14 +139,15 @@ describe Riffer::Runner::Fibers do
           n
         end
 
-        expect(max_concurrent).must_be :<=, 2
+        expect(results).must_equal [1, 2, 3, 4]
+        expect(max_concurrent).must_equal 2
       end
     end
 
     it "raises the first error inside a running reactor" do
       runner = Riffer::Runner::Fibers.new
 
-      Async do
+      Sync do
         error = expect do
           runner.map([1, 2, 3], context: nil) do |n|
             raise ArgumentError, "boom #{n}" if n > 1
